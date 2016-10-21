@@ -97,7 +97,7 @@ def LoadData():
     X = []
     Y = []
     source = "/home/prakhar/SubjectBrainRecording"
-    os.chdir("./Data")
+    os.chdir("./Data")  
     for file in os.listdir(source):
         os.chdir("./"+file+"/TimedVersion/")
         for i in xrange(25):
@@ -191,6 +191,7 @@ def build_cnn(input_var=None, W_init=None, n_layers=(4, 2, 1), n_filters_first=3
             network = tf.nn.max_pool(network, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1],padding='VALID')
         weights = W_init
     return network, weights
+
 
 def build_convpool_mix(input_vars, nb_classes, GRAD_CLIP=100, imSize=64, n_colors=3, n_timewin=7,train=False):
     """
@@ -314,13 +315,24 @@ if __name__ == '__main__':
     correct_prediction = tf.equal(tf.argmax(network, 1), tf.argmax(y, 1))
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
     init = tf.initialize_all_variables()
+    batch_size = 64
     with tf.Session() as sess:
         sess.run(init)
         for i in range(100):
-            sess.run([train_step], feed_dict={X: train_images, y: train_labels, train: True })
+            batch_no = 0
+            while (batch_no*batch_size) < train_images.shape[0]:
+                ind = batch_no*batch_size
+                if ind + batch_size < train_images.shape[0]:
+                    batch_images = train_images[ind:ind+batch_size,:,:,:,:]
+                    batch_labels = train_labels[ind:ind+batch_size,:]
+                    sess.run([train_step], feed_dict={X: batch_images, y: batch_labels, train: True })
+                else:
+                    batch_images = train_images[ind:,:,:,:,:]
+                    batch_labels = train_labels[ind:,:]
+                    sess.run([train_step], feed_dict={X: batch_images, y: batch_labels, train: True })
             print "Train step for epoch "+str(i)+" Done!!"
-            train_accuracy = sess.run([accuracy], feed_dict={
+            test_accuracy = sess.run([accuracy], feed_dict={
                 X: test_images, y: test_labels, train: False})
-            print("step %d, training accuracy %g" % (i, train_accuracy))
+            print("step %d, training accuracy %g" % (i, test_accuracy))
     
     
