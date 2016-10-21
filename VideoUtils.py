@@ -5,6 +5,7 @@ from scipy import misc
 import numpy as np
 source = "/home/prakhar/SubjectBrainRecording"
 dict1 = {}
+os.chdir("./Data")
 for filename in os.listdir(source):
 	cap = cv2.VideoCapture(source+"/"+filename)
 	directory = filename
@@ -45,7 +46,7 @@ for filename in os.listdir(source):
 		base1 = i*total_img_trial
 		for j in xrange(7):
 			base2 = j*12
-			accumulator = np.zeros((200,200,3))
+			accumulator = np.zeros((64,64,3))
 			p = 12
 			if j==6:
 				if total_img_trial == 85:
