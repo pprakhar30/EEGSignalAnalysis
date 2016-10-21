@@ -96,9 +96,9 @@ def gen_images(locs, features, nGridPoints, normalize=True, n_bands=3,
 def LoadData():
     X = []
     Y = []
-    source = "/home/prakhar/SubjectBrainRecording"
+    source = ["ashish2.mp4","Mehul2.mp4","Prakhar.mp4","rahul.mp4","raj.mp4","rishi.mp4","rohit.mp4","rohitkm.mp4","sandeep.mp4","satish.mp4","shubham.mp4","touqeer.mp4"]
     os.chdir("./Data")  
-    for file in os.listdir(source):
+    for file in source:
         os.chdir("./"+file+"/TimedVersion/")
         for i in xrange(25):
             x = []
@@ -322,7 +322,8 @@ if __name__ == '__main__':
             batch_no = 0
             while (batch_no*batch_size) < train_images.shape[0]:
                 ind = batch_no*batch_size
-                if ind + batch_size < train_images.shape[0]:
+               # print ind
+		if ind + batch_size < train_images.shape[0]:
                     batch_images = train_images[ind:ind+batch_size,:,:,:,:]
                     batch_labels = train_labels[ind:ind+batch_size,:]
                     sess.run([train_step], feed_dict={X: batch_images, y: batch_labels, train: True })
@@ -330,9 +331,9 @@ if __name__ == '__main__':
                     batch_images = train_images[ind:,:,:,:,:]
                     batch_labels = train_labels[ind:,:]
                     sess.run([train_step], feed_dict={X: batch_images, y: batch_labels, train: True })
+		batch_no += 1
             print "Train step for epoch "+str(i)+" Done!!"
             test_accuracy = sess.run([accuracy], feed_dict={
                 X: test_images, y: test_labels, train: False})
-            print("step %d, training accuracy %g" % (i, test_accuracy))
-    
+            print "Test accuracy for "+str(i),test_accuracy 
     
