@@ -11,6 +11,7 @@ from scipy.misc import bytescale
 from sklearn.preprocessing import scale
 from utils import cart2sph, pol2cart
 from Output_Utils import Get_Convpool
+from sklearn.metrics import precision_score,recall_score,f1_score
 import tensorflow as tf
 import os
 import cv2
@@ -158,6 +159,7 @@ def build_convpool_mix(convpool, nb_classes, GRAD_CLIP=100, imSize=64, n_colors=
         convpool = tf.nn.bias_add(tf.matmul(convpool, weights), bias)
         convpool = tf.nn.softmax(convpool)
     # And, finally, the 10-unit output layer with 50% dropout on its inputs:
+    print type(convpool),convpool.get_shape()
     return convpool
 
 
@@ -182,6 +184,7 @@ if __name__ == '__main__':
     answer = scipy.io.loadmat('path')'''
     train_images, train_labels, test_images, test_labels =  LoadData()
     (convpool_train,convpool_test,x) = Get_Convpool(train_images,test_images)
+    print convpool_train.shape
     X = tf.placeholder(tf.float32,shape=(None,7,x),name='Input')
     y = tf.placeholder(tf.float32)
     train = tf.placeholder(tf.bool)
@@ -212,12 +215,17 @@ if __name__ == '__main__':
             test_accuracy = sess.run([accuracy], feed_dict={
                 X: convpool_test, y: test_labels, train: False})
             print("step %d, training accuracy %g" % (i, test_accuracy[0]))
-        y_true = np.argmax(test_label,1)
-        y_p = sess.run([train_step], feed_dict={X: convpool_test, y: test_labels, train: False})
-        y_pred = tf.argmax(y_p, 1)
-        print "Precision", sk.metrics.precision_score(y_true, y_pred)
-        print "Recall", sk.metrics.recall_score(y_true, y_pred)
-        print "f1_score", sk.metrics.f1_score(y_true, y_pred)
+        y_true = np.argmax(test_labels,1)
+        y_p = sess.run(network, feed_dict={X: convpool_test, y:test_labels,  train: False})
+	#y_p = y_p[0,:,:]
+	print type(y_p),y_p.shape
+        y_pred = np.argmax(y_p, 1)
+	print y_pred
+	print y_true
+	print len(y_pred)
+        print "Precision", precision_score(y_true, y_pred)
+        print "Recall", recall_score(y_true, y_pred)
+        print "f1_score", f1_score(y_true, y_pred)
         print "confusion_matrix"
         print sk.metrics.confusion_matrix(y_true, y_pred)
 

@@ -21,7 +21,7 @@ def Y_Output():
 		     for row in spamreader:
 				print row
 def Get_Convpool(train_images,test_images):
-	with open("vgg16-20160129.tfmodel", mode='rb') as f:
+	with open("vgg16.tfmodel", mode='rb') as f:
   		fileContent = f.read()
 
 	graph_def = tf.GraphDef()
