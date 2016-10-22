@@ -79,7 +79,7 @@ def Get_Pre_Trained_Weights(input_vars,name):
         init = tf.initialize_all_variables()
         sess.run(init)
         #batch = np.reshape(input_vars,(-1, 224, 224, 3))
-        n_timewin = 7
+        n_timewin = 7   
         convnets = []
         for i in xrange(n_timewin):
             feed_dict = { images:input_vars[:,i,:,:,:] }
@@ -87,7 +87,7 @@ def Get_Pre_Trained_Weights(input_vars,name):
             pool_tensor = sess.run(pool_tensor, feed_dict=feed_dict)
             convnets.append(tf.contrib.layers.flatten(pool_tensor))
         convpool = tf.pack(convnets, axis = 1)
-    return convpool
+        return convpool
 
 def build_convpool_mix(convpool, nb_classes, GRAD_CLIP=100, imSize=64, n_colors=3, n_timewin=7,train=False):
     """
@@ -161,7 +161,7 @@ def build_convpool_mix(convpool, nb_classes, GRAD_CLIP=100, imSize=64, n_colors=
 
 if __name__ == '__main__':
     
-    X = tf.placeholder(tf.float32,shape=(None, 7, 64, 64, 3),name='Input')
+    X = tf.placeholder(tf.float32,name='Input')
     y = tf.placeholder(tf.float32)
     train = tf.placeholder(tf.bool)
     '''locs = scipy.io.loadmat('path')
@@ -181,38 +181,64 @@ if __name__ == '__main__':
     test_y = scipy.io.loadmat('path')
     answer = scipy.io.loadmat('path')'''
     train_images, train_labels, test_images, test_labels =  LoadData()
-    convpool_train = Get_Pre_Trained_Weights(train_images,"train")
-    convpool_test = Get_Pre_Trained_Weights(test_images,"test")
-    #print train_images.shape,train_labels.shape,test_images.shape,test_labels.shape
-    #print os.getcwd()
-    network = build_convpool_mix(X, 2, 90, train)
-    cross_entropy = tf.reduce_mean(-tf.reduce_sum(y * tf.log(network), reduction_indices=[1]))
-    train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
-    correct_prediction = tf.equal(tf.argmax(network, 1), tf.argmax(y, 1))
-    accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-    init = tf.initialize_all_variables()
+    with open("vgg16.tfmodel", mode='rb') as f:
+        fileContent = f.read()
+
+    graph_def = tf.GraphDef()
+    graph_def.ParseFromString(fileContent)
+    images = tf.placeholder(tf.float32,shape = (None, 64, 64, 3),name=name)
+    tf.import_graph_def(graph_def, input_map={ "images": images })
+    print "graph loaded from disk"
+
+    graph = tf.get_default_graph()
     with tf.Session() as sess:
+        init = tf.initialize_all_variables()
         sess.run(init)
+        #batch = np.reshape(input_vars,(-1, 224, 224, 3))
+        n_timewin = 7   
+        convnets_train = []
+        convnets_test = []
+        for i in xrange(n_timewin):
+            pool_tensor = graph.get_tensor_by_name("import/pool5:0")
+            feed_dict = { images:train_images[:,i,:,:,:] }
+            convnet_train = sess.run(pool_tensor, feed_dict=feed_dict)
+            convnets_train.append(tf.contrib.layers.flatten(convnet_train))
+            feed_dict = { images:test_images[:,i,:,:,:] }
+            convnet_test = sess.run(pool_tensor, feed_dict=feed_dict)
+            convnets_test.append(tf.contrib.layers.flatten(convnet_test))
+            
+        convpool_train = tf.pack(convnets_train, axis = 1)
+        convpool_test = tf.pack(convnets_test ,axis = 1)
+        #print train_images.shape,train_labels.shape,test_images.shape,test_labels.shape
+        #print os.getcwd()
+        network = build_convpool_mix(X, 2, 90, train)
+        cross_entropy = tf.reduce_mean(-tf.reduce_sum(y * tf.log(network), reduction_indices=[1]))
+        train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
+        correct_prediction = tf.equal(tf.argmax(network, 1), tf.argmax(y, 1))
+        accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+        #init = tf.initialize_all_variables()
+        sess.run(init)
+        batch_size = 64
         for i in range(100):
             batch_no = 0
-            while (batch_no*batch_size) < train_images.shape[0]:
+            while (batch_no*batch_size) < convpool_train.get_shape()[0]:
                 ind = batch_no*batch_size
                # print ind
-                if ind + batch_size < train_images.shape[0]:
-                    batch_images = train_images[ind:ind+batch_size,:,:,:,:]
+                if ind + batch_size < convpool_train.get_shape()[0]:
+                    batch_images = convpool_train[ind:ind+batch_size,:]
                     batch_labels = train_labels[ind:ind+batch_size,:]
                     sess.run([train_step], feed_dict={X: batch_images, y: batch_labels, train: True })
                 else:
-                    batch_images = train_images[ind:,:,:,:,:]
+                    batch_images = convpool_train[ind:,:]
                     batch_labels = train_labels[ind:,:]
                     sess.run([train_step], feed_dict={X: batch_images, y: batch_labels, train: True })
                 batch_no += 1
             print "Train step for epoch "+str(i)+" Done!!"
             train_accuracy = sess.run([accuracy], feed_dict={
-                X: test_images, y: test_labels, train: False})
+                X: convpool_test, y: test_labels, train: False})
             print("step %d, training accuracy %g" % (i, train_accuracy))
         y_true = np.argmax(test_label,1)
-        y_p = sess.run([train_step], feed_dict={X: test_images, y: test_labels, train: False})
+        y_p = sess.run([train_step], feed_dict={X: convpool_test, y: test_labels, train: False})
         y_pred = tf.argmax(y_p, 1)
         print "Precision", sk.metrics.precision_score(y_true, y_pred)
         print "Recall", sk.metrics.recall_score(y_true, y_pred)
