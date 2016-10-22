@@ -184,7 +184,7 @@ if __name__ == '__main__':
 
     graph_def = tf.GraphDef()
     graph_def.ParseFromString(fileContent)
-    images = tf.placeholder(tf.float32,shape = (None, 64, 64, 3),name=name)
+    images = tf.placeholder(tf.float32,shape = (None, 64, 64, 3))
     tf.import_graph_def(graph_def, input_map={ "images": images })
     print "graph loaded from disk"
 
@@ -207,8 +207,8 @@ if __name__ == '__main__':
             
         convpool_train = tf.pack(convnets_train, axis = 1)
         convpool_test = tf.pack(convnets_test ,axis = 1)
-        x = convnets_train.get_shape()[2]
-        X = tf.placeholder(tf.float32,shape=(None,7,x,name='Input'))
+        x = convpool_train.get_shape()[2]
+        X = tf.placeholder(tf.float32,shape=(None,7,x),name='Input')
         y = tf.placeholder(tf.float32)
         train = tf.placeholder(tf.bool)
         #print train_images.shape,train_labels.shape,test_images.shape,test_labels.shape
