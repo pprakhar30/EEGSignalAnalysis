@@ -338,7 +338,7 @@ if __name__ == '__main__':
                 X: test_images, y: test_labels, train: False})
             print "Test accuracy for "+str(i),test_accuracy 
         y_true = np.argmax(test_labels,1)
-        y_p = sess.run(network, feed_dict={X: convpool_test, y:test_labels,  train: False})
+        y_p = sess.run(network, feed_dict={X: test_images, y:test_labels,  train: False})
         #y_p = y_p[0,:,:]
         print type(y_p),y_p.shape
         y_pred = np.argmax(y_p, 1)
