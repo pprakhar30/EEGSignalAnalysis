@@ -10,6 +10,7 @@ from scipy.interpolate import griddata
 from scipy.misc import bytescale
 from sklearn.preprocessing import scale
 from utils import cart2sph, pol2cart
+from Output_Utils import Get_Convpool
 import tensorflow as tf
 import os
 import cv2
@@ -180,50 +181,19 @@ if __name__ == '__main__':
     test_y = scipy.io.loadmat('path')
     answer = scipy.io.loadmat('path')'''
     train_images, train_labels, test_images, test_labels =  LoadData()
-    with open("vgg16.tfmodel", mode='rb') as f:
-        fileContent = f.read()
-
-    graph_def = tf.GraphDef()
-    graph_def.ParseFromString(fileContent)
-    images = tf.placeholder(tf.float32,shape = (None, 64, 64, 3))
-    tf.import_graph_def(graph_def, input_map={ "images": images })
-    print "graph loaded from disk"
-
-    graph = tf.get_default_graph()
+    (convpool_train,convpool_test,x) = Get_Convpool(train_images,test_images)
+    X = tf.placeholder(tf.float32,shape=(None,7,x),name='Input')
+    y = tf.placeholder(tf.float32)
+    train = tf.placeholder(tf.bool)
+    network = build_convpool_mix(X, 2, 90, train)
+    cross_entropy = tf.reduce_mean(-tf.reduce_sum(y * tf.log(network), reduction_indices=[1]))
+    train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
+    correct_prediction = tf.equal(tf.argmax(network, 1), tf.argmax(y, 1))
+    accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+    init = tf.initialize_all_variables()
+    batch_size = 64
     with tf.Session() as sess:
-        init = tf.initialize_all_variables()
         sess.run(init)
-        #batch = np.reshape(input_vars,(-1, 224, 224, 3))
-        n_timewin = 7   
-        convnets_train = []
-        convnets_test = []
-        for i in xrange(n_timewin):
-            pool_tensor = graph.get_tensor_by_name("import/pool5:0")
-            feed_dict = { images:train_images[:,i,:,:,:] }
-            convnet_train = sess.run(pool_tensor, feed_dict=feed_dict)
-            convnets_train.append(tf.contrib.layers.flatten(convnet_train))
-            feed_dict = { images:test_images[:,i,:,:,:] }
-            convnet_test = sess.run(pool_tensor, feed_dict=feed_dict)
-            convnets_test.append(tf.contrib.layers.flatten(convnet_test))
-            
-        convpool_train = tf.pack(convnets_train, axis = 1)
-        convpool_test = tf.pack(convnets_test ,axis = 1)
-        x = convpool_train.get_shape()[2]
-        convpool_train = sess.run(convpool_train)
-        convpool_test = sess.run(convpool_test)
-        X = tf.placeholder(tf.float32,shape=(None,7,x),name='Input')
-        y = tf.placeholder(tf.float32)
-        train = tf.placeholder(tf.bool)
-        #print train_images.shape,train_labels.shape,test_images.shape,test_labels.shape
-        #print os.getcwd()
-        network = build_convpool_mix(X, 2, 90, train)
-        cross_entropy = tf.reduce_mean(-tf.reduce_sum(y * tf.log(network), reduction_indices=[1]))
-        train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
-        correct_prediction = tf.equal(tf.argmax(network, 1), tf.argmax(y, 1))
-        accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-        #init = tf.initialize_all_variables()
-        sess.run(init)
-        batch_size = 64
         for i in range(100):
             batch_no = 0
             while (batch_no*batch_size) < convpool_train.shape[0]:
@@ -239,9 +209,9 @@ if __name__ == '__main__':
                     sess.run([train_step], feed_dict={X: batch_images, y: batch_labels, train: True })
                 batch_no += 1
             print "Train step for epoch "+str(i)+" Done!!"
-            train_accuracy = sess.run([accuracy], feed_dict={
+            test_accuracy = sess.run([accuracy], feed_dict={
                 X: convpool_test, y: test_labels, train: False})
-            print("step %d, training accuracy %g" % (i, train_accuracy))
+            print("step %d, training accuracy %g" % (i, test_accuracy[0]))
         y_true = np.argmax(test_label,1)
         y_p = sess.run([train_step], feed_dict={X: convpool_test, y: test_labels, train: False})
         y_pred = tf.argmax(y_p, 1)
