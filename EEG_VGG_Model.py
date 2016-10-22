@@ -217,12 +217,12 @@ if __name__ == '__main__':
             print("step %d, training accuracy %g" % (i, test_accuracy[0]))
         y_true = np.argmax(test_labels,1)
         y_p = sess.run(network, feed_dict={X: convpool_test, y:test_labels,  train: False})
-	#y_p = y_p[0,:,:]
-	print type(y_p),y_p.shape
+    	#y_p = y_p[0,:,:]
+    	print type(y_p),y_p.shape
         y_pred = np.argmax(y_p, 1)
-	print y_pred
-	print y_true
-	print len(y_pred)
+    	print y_pred
+    	print y_true
+    	print len(y_pred)
         print "Precision", precision_score(y_true, y_pred)
         print "Recall", recall_score(y_true, y_pred)
         print "f1_score", f1_score(y_true, y_pred)

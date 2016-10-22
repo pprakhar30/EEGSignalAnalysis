@@ -10,6 +10,7 @@ from scipy.interpolate import griddata
 from scipy.misc import bytescale
 from sklearn.preprocessing import scale
 from utils import cart2sph, pol2cart
+from sklearn.metrics import precision_score,recall_score,f1_score
 import tensorflow as tf
 import os
 import cv2
@@ -323,7 +324,7 @@ if __name__ == '__main__':
             while (batch_no*batch_size) < train_images.shape[0]:
                 ind = batch_no*batch_size
                # print ind
-		if ind + batch_size < train_images.shape[0]:
+	            if ind + batch_size < train_images.shape[0]:
                     batch_images = train_images[ind:ind+batch_size,:,:,:,:]
                     batch_labels = train_labels[ind:ind+batch_size,:]
                     sess.run([train_step], feed_dict={X: batch_images, y: batch_labels, train: True })
@@ -331,9 +332,22 @@ if __name__ == '__main__':
                     batch_images = train_images[ind:,:,:,:,:]
                     batch_labels = train_labels[ind:,:]
                     sess.run([train_step], feed_dict={X: batch_images, y: batch_labels, train: True })
-		batch_no += 1
+                batch_no += 1
             print "Train step for epoch "+str(i)+" Done!!"
             test_accuracy = sess.run([accuracy], feed_dict={
                 X: test_images, y: test_labels, train: False})
             print "Test accuracy for "+str(i),test_accuracy 
+        y_true = np.argmax(test_labels,1)
+        y_p = sess.run(network, feed_dict={X: convpool_test, y:test_labels,  train: False})
+        #y_p = y_p[0,:,:]
+        print type(y_p),y_p.shape
+        y_pred = np.argmax(y_p, 1)
+        print y_pred
+        print y_true
+        print len(y_pred)
+        print "Precision", precision_score(y_true, y_pred)
+        print "Recall", recall_score(y_true, y_pred)
+        print "f1_score", f1_score(y_true, y_pred)
+        print "confusion_matrix"
+        print sk.metrics.confusion_matrix(y_true, y_pred)
     
