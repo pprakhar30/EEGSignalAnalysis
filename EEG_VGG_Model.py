@@ -51,38 +51,42 @@ def LoadData():
     return (train_images,train_labels,test_images,test_labels)
 
 
-def Get_Pool5_Tensor(input_vars, graph):
+'''def Get_Pool5_Tensor(input_vars, graph):
     
     with tf.Session() as sess:
       init = tf.initialize_all_variables()
       sess.run(init)
-      batch = input_vars.reshape((-1, 224, 224, 3))
+      batch = np.reshape(input_vars,(-1, 224, 224, 3))
       feed_dict = { images: batch }
 
       pool_tensor = graph.get_tensor_by_name("import/pool5:0")
-      pool_tensor = sess.run(prob_tensor, feed_dict=feed_dict)
-    return pool_tensor
+      pool_tensor = sess.run(pool_tensor, feed_dict=feed_dict)
+    return pool_tensor'''
 
 
 def Get_Pre_Trained_Weights(input_vars):
-    with open("vgg16-20160129.tfmodel", mode='rb') as f:
+    with open("vgg16.tfmodel", mode='rb') as f:
         fileContent = f.read()
 
     graph_def = tf.GraphDef()
     graph_def.ParseFromString(fileContent)
-
-    images = tf.placeholder("float", [None, 224, 224, 3])
-
+    images = tf.placeholder(tf.float32,shape = (None, 64, 64, 3))
     tf.import_graph_def(graph_def, input_map={ "images": images })
     print "graph loaded from disk"
 
     graph = tf.get_default_graph()
-    n_timewin = 7
-    convnets = []
-    for i in xrange(n_timewin):
-        convnet = Get_Pool5_Tensor(input_vars[:,i,:,:,:], graph)
-        convnets.append(tf.contrib.layers.flatten(convnet))
-    convpool = tf.pack(convnets, axis = 1)
+    with tf.Session() as sess:
+        init = tf.initialize_all_variables()
+        sess.run(init)
+        #batch = np.reshape(input_vars,(-1, 224, 224, 3))
+        n_timewin = 7
+        convnets = []
+        for i in xrange(n_timewin):
+            feed_dict = { images:input_vars[:,i,:,:,:] }
+            pool_tensor = graph.get_tensor_by_name("import/pool5:0")
+            pool_tensor = sess.run(pool_tensor, feed_dict=feed_dict)
+            convnets.append(tf.contrib.layers.flatten(pool_tensor))
+        convpool = tf.pack(convnets, axis = 1)
     return convpool
 
 def build_convpool_mix(convpool, nb_classes, GRAD_CLIP=100, imSize=64, n_colors=3, n_timewin=7,train=False):
