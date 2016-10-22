@@ -161,9 +161,7 @@ def build_convpool_mix(convpool, nb_classes, GRAD_CLIP=100, imSize=64, n_colors=
 
 if __name__ == '__main__':
     
-    X = tf.placeholder(tf.float32,name='Input')
-    y = tf.placeholder(tf.float32)
-    train = tf.placeholder(tf.bool)
+    
     '''locs = scipy.io.loadmat('path')
     locs_3d = locs['A']
     locs_2d = []
@@ -209,6 +207,10 @@ if __name__ == '__main__':
             
         convpool_train = tf.pack(convnets_train, axis = 1)
         convpool_test = tf.pack(convnets_test ,axis = 1)
+        x = convnets_train.get_shape()[2]
+        X = tf.placeholder(tf.float32,shape=(None,7,x,name='Input'))
+        y = tf.placeholder(tf.float32)
+        train = tf.placeholder(tf.bool)
         #print train_images.shape,train_labels.shape,test_images.shape,test_labels.shape
         #print os.getcwd()
         network = build_convpool_mix(X, 2, 90, train)
@@ -225,11 +227,11 @@ if __name__ == '__main__':
                 ind = batch_no*batch_size
                # print ind
                 if ind + batch_size < convpool_train.get_shape()[0]:
-                    batch_images = convpool_train[ind:ind+batch_size,:]
+                    batch_images = convpool_train[ind:ind+batch_size,:,:]
                     batch_labels = train_labels[ind:ind+batch_size,:]
                     sess.run([train_step], feed_dict={X: batch_images, y: batch_labels, train: True })
                 else:
-                    batch_images = convpool_train[ind:,:]
+                    batch_images = convpool_train[ind:,:,:]
                     batch_labels = train_labels[ind:,:]
                     sess.run([train_step], feed_dict={X: batch_images, y: batch_labels, train: True })
                 batch_no += 1
