@@ -64,13 +64,13 @@ def LoadData():
     return pool_tensor'''
 
 
-def Get_Pre_Trained_Weights(input_vars):
+def Get_Pre_Trained_Weights(input_vars,name):
     with open("vgg16.tfmodel", mode='rb') as f:
         fileContent = f.read()
 
     graph_def = tf.GraphDef()
     graph_def.ParseFromString(fileContent)
-    images = tf.placeholder(tf.float32,shape = (None, 64, 64, 3))
+    images = tf.placeholder(tf.float32,shape = (None, 64, 64, 3),name=name)
     tf.import_graph_def(graph_def, input_map={ "images": images })
     print "graph loaded from disk"
 
@@ -181,8 +181,8 @@ if __name__ == '__main__':
     test_y = scipy.io.loadmat('path')
     answer = scipy.io.loadmat('path')'''
     train_images, train_labels, test_images, test_labels =  LoadData()
-    convpool_train = Get_Pre_Trained_Weights(train_images)
-    convpool_test = Get_Pre_Trained_Weights(test_images)
+    convpool_train = Get_Pre_Trained_Weights(train_images,"train")
+    convpool_test = Get_Pre_Trained_Weights(test_images,"test")
     #print train_images.shape,train_labels.shape,test_images.shape,test_labels.shape
     #print os.getcwd()
     network = build_convpool_mix(X, 2, 90, train)
