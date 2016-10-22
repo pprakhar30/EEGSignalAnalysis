@@ -323,8 +323,8 @@ if __name__ == '__main__':
             batch_no = 0
             while (batch_no*batch_size) < train_images.shape[0]:
                 ind = batch_no*batch_size
-               # print ind
-	            if ind + batch_size < train_images.shape[0]:
+                # print ind
+                if ind + batch_size < train_images.shape[0]:
                     batch_images = train_images[ind:ind+batch_size,:,:,:,:]
                     batch_labels = train_labels[ind:ind+batch_size,:]
                     sess.run([train_step], feed_dict={X: batch_images, y: batch_labels, train: True })
