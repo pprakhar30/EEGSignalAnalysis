@@ -51,19 +51,8 @@ def LoadData():
     return (train_images,train_labels,test_images,test_labels)
 
 
-def Get_Pool5_Tensor(input_vars):
-    with open("vgg16-20160129.tfmodel", mode='rb') as f:
-        fileContent = f.read()
-
-    graph_def = tf.GraphDef()
-    graph_def.ParseFromString(fileContent)
-
-    images = tf.placeholder("float", [None, 224, 224, 3])
-
-    tf.import_graph_def(graph_def, input_map={ "images": images })
-    print "graph loaded from disk"
-
-    graph = tf.get_default_graph()
+def Get_Pool5_Tensor(input_vars, graph):
+    
     with tf.Session() as sess:
       init = tf.initialize_all_variables()
       sess.run(init)
@@ -76,10 +65,22 @@ def Get_Pool5_Tensor(input_vars):
 
 
 def Get_Pre_Trained_Weights(input_vars):
+    with open("vgg16-20160129.tfmodel", mode='rb') as f:
+        fileContent = f.read()
+
+    graph_def = tf.GraphDef()
+    graph_def.ParseFromString(fileContent)
+
+    images = tf.placeholder("float", [None, 224, 224, 3])
+
+    tf.import_graph_def(graph_def, input_map={ "images": images })
+    print "graph loaded from disk"
+
+    graph = tf.get_default_graph()
     n_timewin = 7
     convnets = []
     for i in xrange(n_timewin):
-        convnet = Get_Pool5_Tensor(input_vars[:,i,:,:,:])
+        convnet = Get_Pool5_Tensor(input_vars[:,i,:,:,:], graph)
         convnets.append(tf.contrib.layers.flatten(convnet))
     convpool = tf.pack(convnets, axis = 1)
     return convpool
