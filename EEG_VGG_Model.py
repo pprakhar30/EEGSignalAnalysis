@@ -98,6 +98,7 @@ def build_convpool_mix(convpool, nb_classes, GRAD_CLIP=100, imSize=64, n_colors=
                         the backward pass.
     :return: a pointer to the output of last layer
     """
+    convpool = tf.convert_to_tensor(convpool)
     reformConvpool = tf.expand_dims(convpool,2)
     conv_out = None
     x = int (convpool.get_shape()[2])
@@ -208,6 +209,8 @@ if __name__ == '__main__':
         convpool_train = tf.pack(convnets_train, axis = 1)
         convpool_test = tf.pack(convnets_test ,axis = 1)
         x = convpool_train.get_shape()[2]
+        convpool_train = sess.run(convpool_train)
+        convpool_test = sess.run(convpool_test)
         X = tf.placeholder(tf.float32,shape=(None,7,x),name='Input')
         y = tf.placeholder(tf.float32)
         train = tf.placeholder(tf.bool)
@@ -223,10 +226,10 @@ if __name__ == '__main__':
         batch_size = 64
         for i in range(100):
             batch_no = 0
-            while (batch_no*batch_size) < convpool_train.get_shape()[0]:
+            while (batch_no*batch_size) < convpool_train.shape[0]:
                 ind = batch_no*batch_size
                # print ind
-                if ind + batch_size < convpool_train.get_shape()[0]:
+                if ind + batch_size < convpool_train.shape[0]:
                     batch_images = convpool_train[ind:ind+batch_size,:,:]
                     batch_labels = train_labels[ind:ind+batch_size,:]
                     sess.run([train_step], feed_dict={X: batch_images, y: batch_labels, train: True })
