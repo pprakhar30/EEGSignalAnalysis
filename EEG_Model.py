@@ -341,13 +341,12 @@ if __name__ == '__main__':
                 X: test_images, y: test_labels, train: False})
             print "Test accuracy for "+str(i),test_accuracy 
             if best_accuracy<test_accuracy[0]:
-
-                y_true = np.argmax(test_labels,1)
+                best_accuracy = test_accuracy[0]
                 y_p = sess.run(network, feed_dict={X: test_images, y:test_labels,  train: False})
-                print type(y_p),y_p.shape
                 y_pred = np.argmax(y_p, 1)
                 Y_P = y_pred
-                
+        
+        y_true = np.argmax(test_labels,1)
         print Y_P
         print y_true
         print "Precision", precision_score(y_true, Y_P)
