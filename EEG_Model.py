@@ -318,6 +318,8 @@ if __name__ == '__main__':
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
     init = tf.initialize_all_variables()
     batch_size = 64
+    best_accuracy = 0
+    Y_P = 0
     with tf.Session() as sess:
         sess.run(init)
         for i in range(100):
@@ -338,17 +340,19 @@ if __name__ == '__main__':
             test_accuracy = sess.run([accuracy], feed_dict={
                 X: test_images, y: test_labels, train: False})
             print "Test accuracy for "+str(i),test_accuracy 
-        y_true = np.argmax(test_labels,1)
-        y_p = sess.run(network, feed_dict={X: test_images, y:test_labels,  train: False})
-        #y_p = y_p[0,:,:]
-        print type(y_p),y_p.shape
-        y_pred = np.argmax(y_p, 1)
-        print y_pred
+            if best_accuracy<test_accuracy[0]:
+
+                y_true = np.argmax(test_labels,1)
+                y_p = sess.run(network, feed_dict={X: test_images, y:test_labels,  train: False})
+                print type(y_p),y_p.shape
+                y_pred = np.argmax(y_p, 1)
+                Y_P = y_pred
+                
+        print Y_P
         print y_true
-        print len(y_pred)
-        print "Precision", precision_score(y_true, y_pred)
-        print "Recall", recall_score(y_true, y_pred)
-        print "f1_score", f1_score(y_true, y_pred)
+        print "Precision", precision_score(y_true, Y_P)
+        print "Recall", recall_score(y_true, Y_P)
+        print "f1_score", f1_score(y_true, Y_P)
         print "confusion_matrix"
-        print sk.metrics.confusion_matrix(y_true, y_pred)
-    
+        print sk.metrics.confusion_matrix(y_true, Y_P)
+
