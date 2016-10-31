@@ -23,7 +23,7 @@ For this experiment we made use of EMOTIV Epoc+ device to collect EEG signals an
 
 ## Implementation Details
 - In this experiment we used Convolutional Neural Networks(CNNs) and Recurrent Neural Networks(RNNs)
-- The model that we used is taken from: ![References][7]
+- The model that we used is taken from: [References][7]
 - The images are cropped out of BAM videos for each individual which were each 1:46 min long.
 - FPS is approximately : 19.09 frames per second.
 - there is a 2 second transition period from one word to another.
@@ -41,7 +41,7 @@ For this experiment we made use of EMOTIV Epoc+ device to collect EEG signals an
 - One of the major concern over here is that we do not have enough data to train RNNs over a skewed dataset such as ours which is self evident in the second model
 
 ## TODO
-- Train the model using the images constructed from EEG signals as specified in ![References][7].
+- Train the model using the images constructed from EEG signals as specified in [References][7].
 - We used the BAM videos from the theta frequency bands only we should incorporate Beta and Alpha Frequency bands as well
 - Develop Context Based Word Familiarity rather than the Unigram approach that we have made use of, make use of N-gram Word Apporach to understand how an individual percieves the meaning of a word 
 
