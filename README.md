@@ -15,15 +15,15 @@ For this experiment we made use of EMOTIV Epoc+ device to collect EEG signals an
 - [Pre-Trained VGG16][6]
 
 ## Datasets
--The EEG signals and Brain Activation Maps were collected using EMOTIV Epoc+ device mentioned above.
--We collected samples from 13 subjects in which they were shown a list of 25 words and they were supposed to tell whether or not they knew the meaning.The recording of one of the subject was of no use because of too much noise and hence was discarded.
--Following is the distribution of Training and Test Set.
--<b>Training Set</b>: Contains 275 instances of 11 subjects who saw 25 word each
--<b>Test Set</b>: Contains 25 instances of a single subject
+- The EEG signals and Brain Activation Maps were collected using EMOTIV Epoc+ device mentioned above.
+- We collected samples from 13 subjects in which they were shown a list of 25 words and they were supposed to tell whether or not they knew the meaning.The recording of one of the subject was of no use because of too much noise and hence was discarded.
+- Following is the distribution of Training and Test Set.
+- <b>Training Set</b>: Contains 275 instances of 11 subjects who saw 25 word each
+- <b>Test Set</b>: Contains 25 instances of a single subject
 
 ## Implementation Details
 - In this experiment we used Convolutional Neural Networks(CNNs) and Recurrent Neural Networks(RNNs)
-- The model that we used is taken from: ![](https://arxiv.org/pdf/1511.06448v3.pdf)
+- The model that we used is taken from: ![References][7]
 - The images are cropped out of BAM videos for each individual which were each 1:46 min long.
 - FPS is approximately : 19.09 frames per second.
 - there is a 2 second transition period from one word to another.
@@ -33,15 +33,15 @@ For this experiment we made use of EMOTIV Epoc+ device to collect EEG signals an
 
 ## Performance
 ###First Model:
--####Accuracy: 0.72
--####Precision: 0.75
--####F1_Score: 0.875
+- <b>Accuracy</b>: 0.72
+- <b>Precision</b>: 0.75
+- <b>F1_Score</b>: 0.875
 ###Second Model:
--####Accuracy :0.28
-One of the major concern over here is that we do not have enough data to train RNNs over a skewed dataset such as ours which is self evident in the second model
+- <b>Accuracy</b>: 0.28
+- One of the major concern over here is that we do not have enough data to train RNNs over a skewed dataset such as ours which is self evident in the second model
 
 ## TODO
-- Train the model using the images constructed from EEG signals as specified in ![](https://arxiv.org/pdf/1511.06448v3.pdf).
+- Train the model using the images constructed from EEG signals as specified in ![References][7].
 - We used the BAM videos from the theta frequency bands only we should incorporate Beta and Alpha Frequency bands as well
 - Develop Context Based Word Familiarity rather than the Unigram approach that we have made use of, make use of N-gram Word Apporach to understand how an individual percieves the meaning of a word 
 
