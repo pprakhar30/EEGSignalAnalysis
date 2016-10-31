@@ -46,7 +46,7 @@ One of the major concern over here is that we do not have enough data to train R
 - Develop Context Based Word Familiarity rather than the Unigram approach that we have made use of, make use of N-gram Word Apporach to understand how an individual percieves the meaning of a word 
 
 ## References
-- [EEG Signal Image Construction and Model for Classification][7] Paper
+- [LEARNING REPRESENTATIONS FROM EEG WITH DEEP RECURRENT-CONVOLUTIONAL NEURAL NETWORKS][7] Paper
 
 ## License
 MIT
