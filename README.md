@@ -32,11 +32,12 @@ For this experiment we made use of EMOTIV Epoc+ device to collect EEG signals an
 - The Model is trained for 100 epochs for the first model and 50 epochs the second model.
 
 ## Performance
-- ### First Model:
+First Model:
 - <b>Accuracy</b>: 0.72
 - <b>Precision</b>: 0.75
 - <b>F1_Score</b>: 0.875
-- ### Second Model:
+
+Second Model:
 - <b>Accuracy</b>: 0.28
 - One of the major concern over here is that we do not have enough data to train RNNs over a skewed dataset such as ours which is self evident in the second model
 
