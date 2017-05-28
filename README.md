@@ -4,7 +4,7 @@ This is a part of my final year project where we try to analyse EEG signals [Ele
 ![Brain Activation Map](https://www.emotiv.com/wp-content/uploads/2016/04/Brain_activity_1.png)
 
 For this experiment we made use of EMOTIV Epoc+ device to collect EEG signals and get the Brain Activation Map videos for individual subjects.
-![EMTIV Epoc+](https://i0.wp.com/emotiv.com/wp-content/uploads/2016/01/emotiv_epoc_01.jpg)
+![EMTIV Epoc+](https://i0.wp.com/emotiv.com/wp-content/uploads/2016/01/emotiv_epoc_01.jpg=250x250)
 
 ## Requirements
 - Python 2.7.6
