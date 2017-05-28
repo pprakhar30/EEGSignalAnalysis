@@ -2,10 +2,10 @@
 
 This is a part of my final year project where we try to analyse EEG signals [Electroencephlogram][1], which are recording of the electrical activity of the brain from the scalp. 
 ![Brain Activation Map](https://www.emotiv.com/wp-content/uploads/2016/04/Brain_activity_1.png)
-<img src="https://www.emotiv.com/wp-content/uploads/2016/04/Brain_activity_1.png" width="400" height="400">
+<img src="https://www.emotiv.com/wp-content/uploads/2016/04/Brain_activity_1.png" width="600" height="400">
 
 For this experiment we made use of EMOTIV Epoc+ device to collect EEG signals and get the Brain Activation Map videos for individual subjects.
-<img src="https://i0.wp.com/emotiv.com/wp-content/uploads/2016/01/emotiv_epoc_01.jpg" width="400" height="200"> 
+<img src="https://i0.wp.com/emotiv.com/wp-content/uploads/2016/01/emotiv_epoc_01.jpg" width="300" height="200"> 
 
 ## Requirements
 - Python 2.7.6
