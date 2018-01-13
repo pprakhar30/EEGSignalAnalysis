@@ -20,8 +20,8 @@ For this experiment we made use of EMOTIV Epoc+ device to collect EEG signals an
 - The EEG signals and Brain Activation Maps were collected using EMOTIV Epoc+ device mentioned above.
 - We collected samples from over 50 subjects in which they were shown a list of 25 words and they were supposed to tell whether or not they knew the meaning.The recording of one of the subject was of no use because of too much noise and hence was discarded.
 - Following is the distribution of Training and Test Set.
-- <b>Training Set</b>: Contains 275 instances of 11 subjects who saw 25 word each
-- <b>Test Set</b>: Contains 25 instances of a single subject
+- <b>Training Set</b>: Contains 1125 instances of 45 subjects who saw 25 word each
+- <b>Test Set</b>: Contains 125 instances of a remaining subjects
 
 ## Implementation Details
 - In this experiment we used Convolutional Neural Networks(CNNs) and Recurrent Neural Networks(RNNs)
