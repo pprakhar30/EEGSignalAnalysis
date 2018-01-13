@@ -18,7 +18,7 @@ For this experiment we made use of EMOTIV Epoc+ device to collect EEG signals an
 
 ## Datasets
 - The EEG signals and Brain Activation Maps were collected using EMOTIV Epoc+ device mentioned above.
-- We collected samples from 13 subjects in which they were shown a list of 25 words and they were supposed to tell whether or not they knew the meaning.The recording of one of the subject was of no use because of too much noise and hence was discarded.
+- We collected samples from over 50 subjects in which they were shown a list of 25 words and they were supposed to tell whether or not they knew the meaning.The recording of one of the subject was of no use because of too much noise and hence was discarded.
 - Following is the distribution of Training and Test Set.
 - <b>Training Set</b>: Contains 275 instances of 11 subjects who saw 25 word each
 - <b>Test Set</b>: Contains 25 instances of a single subject
@@ -26,7 +26,7 @@ For this experiment we made use of EMOTIV Epoc+ device to collect EEG signals an
 ## Implementation Details
 - In this experiment we used Convolutional Neural Networks(CNNs) and Recurrent Neural Networks(RNNs)
 - The model that we used is taken from: [References][7]
-- The images are cropped out of BAM videos for each individual which were each 1:46 min long.
+- The images are cropped out of BAM videos for each individual which were each 1:45 min long.
 - FPS is approximately : 19.09 frames per second.
 - there is a 2 second transition period from one word to another.
 - We make use of two models for extracting features from CNNs one is `EEG_Model.py` in which we train the CNNs from our images as well
@@ -35,7 +35,7 @@ For this experiment we made use of EMOTIV Epoc+ device to collect EEG signals an
 
 ## Performance
 First Model:
-- <b>Accuracy</b>: 0.72
+- <b>Accuracy</b>: 0.758
 - <b>Precision</b>: 0.75
 - <b>F1_Score</b>: 0.875
 
